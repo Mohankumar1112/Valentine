@@ -3,75 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For You ❤️</title>
+    <title>For You, San ❤️</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
+        /* Animated Gradient Background */
         body {
-            background-color: #ffe6e6;
-            font-family: 'Arial', sans-serif;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
             margin: 0;
-            overflow: hidden; /* Stops scrolling if button moves too far */
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #ff9a9e, #fecfef, #ffc3a0, #ffafbd);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            overflow: hidden;
         }
-        h1 { color: #ff3366; font-size: 2.5em; margin-bottom: 30px; padding: 0 20px;}
-        .buttons { position: relative; width: 100%; height: 100px; display: flex; justify-content: center; gap: 20px; }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glassmorphism Card Effect */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+            padding: 40px;
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            z-index: 10;
+            transition: all 0.5s ease;
+        }
+
+        /* Photo Styling */
+        .photo-container {
+            margin-bottom: 20px;
+        }
+        .photo-container img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+        .photo-container img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Text Styling */
+        h1 {
+            color: #d6336c;
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+        }
+        p {
+            color: #555;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        /* Button Styling */
+        .buttons {
+            position: relative;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
         button {
             font-size: 1.2em;
-            padding: 12px 30px;
+            padding: 12px 35px;
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            transition: all 0.3s;
             font-weight: bold;
-            z-index: 10;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-        #yesBtn { background-color: #ff3366; color: white; box-shadow: 0 4px 15px rgba(255, 51, 102, 0.3); }
-        #yesBtn:hover { transform: scale(1.1); }
-        #noBtn { background-color: white; color: #ff3366; border: 2px solid #ff3366; position: absolute; }
+        #yesBtn {
+            background: linear-gradient(45deg, #ff3366, #ff6b81);
+            color: white;
+        }
+        #yesBtn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(255, 51, 102, 0.4);
+        }
+        #noBtn {
+            background-color: white;
+            color: #ff3366;
+            position: absolute;
+        }
+
+        /* Hidden Celebration Screen */
+        #celebration {
+            display: none;
+            color: white;
+            font-size: 3em;
+            font-weight: bold;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+            text-align: center;
+            z-index: 20;
+        }
     </style>
 </head>
 <body>
 
-    <h1>Will you be my Valentine? 🌹</h1>
-    
-    <div class="buttons">
-        <button id="yesBtn" onclick="celebrate()">YES!</button>
-        <button id="noBtn">No</button>
+    <div id="main-card" class="glass-card">
+        <div class="photo-container">
+            <img src="https://images.unsplash.com/photo-1518192161663-5a6238d8af33?q=80&w=400&auto=format&fit=crop" alt="Us">
+        </div>
+        
+        <h1>San, will you be my Valentine? 🌹</h1>
+        <p>Every moment with you is special.<br><br>Love, Mohankumar</p>
+        
+        <div class="buttons">
+            <button id="yesBtn" onclick="celebrate()">YES!</button>
+            <button id="noBtn">No</button>
+        </div>
+    </div>
+
+    <div id="celebration">
+        I Love You! ❤️<br>
+        <span style="font-size: 0.5em;">Best decision ever.</span>
     </div>
 
     <script>
         const noBtn = document.getElementById("noBtn");
-        const yesBtn = document.getElementById("yesBtn");
+        const mainCard = document.getElementById("main-card");
+        const celebration = document.getElementById("celebration");
 
-        // Function to move the button
         function moveButton() {
-            // Get screen size
-            const maxWidth = window.innerWidth - noBtn.offsetWidth;
-            const maxHeight = window.innerHeight - noBtn.offsetHeight;
+            // Calculate safe bounds so the button doesn't go off screen
+            const cardRect = mainCard.getBoundingClientRect();
+            const btnRect = noBtn.getBoundingClientRect();
+            
+            const maxX = window.innerWidth - btnRect.width - 20;
+            const maxY = window.innerHeight - btnRect.height - 20;
+            
+            const randomX = Math.max(20, Math.random() * maxX);
+            const randomY = Math.max(20, Math.random() * maxY);
 
-            // Generate random position
-            const randomX = Math.random() * maxWidth;
-            const randomY = Math.random() * maxHeight;
-
-            // Apply new position
-            noBtn.style.position = "fixed"; // Change to fixed to move anywhere on screen
+            noBtn.style.position = "fixed";
             noBtn.style.left = randomX + "px";
             noBtn.style.top = randomY + "px";
         }
 
-        // Add event listeners for both Mouse (Desktop) and Touch (Mobile)
+        // Works for both phones and computers
         noBtn.addEventListener("mouseover", moveButton);
-        noBtn.addEventListener("touchstart", moveButton); // This fixes it for phones!
+        noBtn.addEventListener("touchstart", moveButton);
 
         function celebrate() {
-            document.body.innerHTML = "<h1>YAY! I Love You! ❤️💖🥰</h1><p style='font-size:50px'>🎉</p>";
-            document.body.style.backgroundColor = "#ffcccc";
+            // Hide the main card and show the celebration text
+            mainCard.style.display = "none";
+            celebration.style.display = "block";
+            
+            // Change background to something solid and romantic
+            document.body.style.background = "#ff3366";
+            
+            // Fire Confetti!
+            var duration = 5 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                var particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount,
+                    origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+                }));
+                confetti(Object.assign({}, defaults, { particleCount,
+                    origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+                }));
+            }, 250);
         }
     </script>
-
 </body>
 </html>
